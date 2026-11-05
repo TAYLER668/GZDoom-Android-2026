@@ -19,10 +19,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Android NDK
-      uses: android-actions/setup-android@v3
-      with:
-        ndk-version: '27.0.12077973'
+    - name: Setup Android SDK and NDK r27
+      run: |
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
 
     - name: Build Native C++ Libraries
       run: |
@@ -40,3 +39,4 @@ jobs:
       with:
         name: GZDoom-APK
         path: doom/build/outputs/apk/debug/*.apk
+        
