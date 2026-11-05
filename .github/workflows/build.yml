@@ -1,0 +1,42 @@
+name: Android CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android NDK
+      uses: android-actions/setup-android@v3
+      with:
+        ndk-version: '27.0.12077973'
+
+    - name: Build Native C++ Libraries
+      run: |
+        chmod +x build_native.sh
+        export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.0.12077973
+        ./build_native.sh
+
+    - name: Build APK with Gradle
+      run: |
+        chmod +x gradlew
+        ./gradlew :doom:assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: GZDoom-APK
+        path: doom/build/outputs/apk/debug/*.apk
